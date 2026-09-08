@@ -1,22 +1,18 @@
 FROM python:3.10-slim
 
-# Install system-level dependencies for audio processing
-RUN apt-get update && apt-get install -y \
+# Install C-libraries for fast audio IO and WORLD vocoder compilation
+RUN apt-get update && apt-get install -y --no-install-recommends \
     libsndfile1 \
     ffmpeg \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-# Set working directory
 WORKDIR /app
 
-# Copy dependencies and install
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
 COPY app.py .
 
-# Command to run the application using Gunicorn
-# Using sh -c to properly read Render's dynamic $PORT variable
-CMD sh -c "gunicorn --bind 0.0.0.0:${PORT:-10000} --timeout 120 --workers 2 app:app"
+# 1 worker with 2 threads prevents RAM multiplication on Render's 512MB tier
+CMD sh -c "gunicorn --bind 0.0.0.0:${PORT:-10000} --workers 1 --threads 2 --timeout 300 app:app"
