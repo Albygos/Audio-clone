@@ -1,0 +1,11 @@
+Flask==3.0.3
+librosa==0.10.1
+soundfile==0.12.1
+numpy==1.26.4
+scipy==1.13.0
+pyworld==0.3.4
+speechbrain==1.0.0
+torch==2.3.0
+torchaudio==2.3.0
+gunicorn==22.0.0
+werkzeug==3.0.3
